@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.Pane?>
+
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.ScreenController">
+   <children>
+      <MenuBar layoutY="2.0" prefHeight="25.0" prefWidth="600.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Order flights">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#byDate" text="By Date" />
+                  <MenuItem mnemonicParsing="false" onAction="#byAirline" text="By Airline" />
+                  <MenuItem mnemonicParsing="false" onAction="#byNumber" text="By Number" />
+                  <MenuItem mnemonicParsing="false" onAction="#byCity" text="By City" />
+                  <MenuItem mnemonicParsing="false" onAction="#byDoor" text="By Door" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <Slider layoutX="579.0" layoutY="29.0" orientation="VERTICAL" prefHeight="357.0" prefWidth="14.0" />
+   </children>
+</Pane>
