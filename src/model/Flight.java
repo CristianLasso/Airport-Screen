@@ -1,14 +1,14 @@
 package model;
 
-public class Flight {
+public class Flight implements Comparable<Flight>{
 	private Date date;
 	private Hour hour;
 	private String airline;
-	private int number;
+	private String number;
 	private String city;
 	private int door;
 	
-	public Flight(Date date, Hour hour, String airline, int number, String city, int door) {
+	public Flight(Date date, Hour hour, String airline, String number, String city, int door) {
 		this.date = date;
 		this.hour = hour;
 		this.airline = airline;
@@ -41,11 +41,11 @@ public class Flight {
 		this.airline = airline;
 	}
 
-	public int getNumber() {
+	public String getNumber() {
 		return number;
 	}
 
-	public void setNumber(int number) {
+	public void setNumber(String number) {
 		this.number = number;
 	}
 
@@ -63,6 +63,19 @@ public class Flight {
 
 	public void setDoor(int door) {
 		this.door = door;
+	}
+
+	@Override
+	public int compareTo(Flight otherFlight) {
+		int comparation;
+		if(number.compareTo(otherFlight.number)<0) {
+			comparation = -1;
+		}else if(number.compareTo(otherFlight.number)>0) {
+			comparation = 1;
+		}else {
+			comparation = 0;
+		}
+		return comparation;
 	}
 	
 }

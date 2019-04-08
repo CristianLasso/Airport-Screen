@@ -35,5 +35,18 @@ public class Date {
 		this.year = year;
 	}
 	
+	@Override
+	public String toString() {
+		String nMonth = "";
+		if(month<10) {
+			nMonth = "0"+month;
+		}else {
+			nMonth = month+"";
+		}
+		String object = year + "-" + nMonth + "-" + day;
+		
+		return object;
+	}
+	
 	
 }

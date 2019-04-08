@@ -38,6 +38,17 @@ public class Hour {
 		this.moment = moment;
 	}
 	
-	
+	@Override
+	public String toString() {
+		String nMinute = "";
+		if(minute<10) {
+			nMinute = "0"+minute;
+		}else {
+			nMinute = minute+"";
+		}
+		String object = hour + ":" + nMinute + " " + moment;
+		
+		return object;
+	}
 
 }
