@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import model.*;
@@ -66,7 +67,21 @@ public class ScreenController {
     @FXML
     private Label door;
     
+    @FXML
+    private MenuButton searchType;
+
+    @FXML
+    private TextField searchText;
+
+    @FXML
+    private Button search;
+    
+    @FXML
+    private Label page;
+    
     private Flight[] flights;
+    
+    private int type;
 
     @FXML
     void byAirline(ActionEvent event) {
@@ -113,6 +128,7 @@ public class ScreenController {
 
     @FXML
     void generate(ActionEvent event) {
+    	clear();
     	flights = new Flight[Integer.parseInt(maxFlights.getText())];
     	for(int i=0; i<Integer.parseInt(maxFlights.getText()); i++) {
     		
@@ -124,7 +140,6 @@ public class ScreenController {
     		
     		Flight current = new Flight(createDate(), createHour(), createAirline(), number, createCity(option), option);
     		flights[i] = current;
-    		System.out.println("Generando "+i);
     	}
     	
     	Comparator<Flight> flightComparator = new FlightDateComparator();
@@ -132,26 +147,47 @@ public class ScreenController {
 		Arrays.sort(flights, flightComparator);
     	fill();
     	
-    	generate.setDisable(true);
     	order.setDisable(false);
     }
     
     public void fill() {
-    	for(int i=0; i<flights.length; i++) {
-    		Label airline = new Label(flights[i].getAirline());
-    		Label number = new Label (flights[i].getNumber()+"");
-    		Label city = new Label (flights[i].getCity());
-    		Label date = new Label (flights[i].getDate()+"");
-    		Label hour = new Label (flights[i].getHour()+"");
-    		Label door = new Label (flights[i].getDoor()+"");
+    	if(page.getText().equals("1") && flights.length<=17) {
+    		for(int i=0; i<flights.length; i++) {
+    			Label airline = new Label(flights[i].getAirline());
+    			Label number = new Label (flights[i].getNumber()+"");
+    			Label city = new Label (flights[i].getCity());
+    			Label date = new Label (flights[i].getDate()+"");
+    			Label hour = new Label (flights[i].getHour()+"");
+    			Label door = new Label (flights[i].getDoor()+"");
     		
-    		airlineCl.getChildren().add(airline);
-    		numberCl.getChildren().add(number);
-    		cityCl.getChildren().add(city);
-    		dateCl.getChildren().add(date);
-    		hourCl.getChildren().add(hour);
-    		doorCl.getChildren().add(door);
-    		System.out.println("Llenando "+i);
+    			airlineCl.getChildren().add(airline);
+    			numberCl.getChildren().add(number);
+    			cityCl.getChildren().add(city);
+    			dateCl.getChildren().add(date);
+    			hourCl.getChildren().add(hour);
+    			doorCl.getChildren().add(door);
+    		}
+    	}else if(flights.length>17) {
+    		int pages = (flights.length/17)+1;
+    		for(int j=0; j<=pages; j++) {
+    			if(j+1 == Integer.parseInt(page.getText())) {
+    				for(int i=(17*j); i<17+(17*j) && i<flights.length; i++) {
+    					Label airline = new Label(flights[i].getAirline());
+    					Label number = new Label (flights[i].getNumber()+"");
+    					Label city = new Label (flights[i].getCity());
+    					Label date = new Label (flights[i].getDate()+"");
+    					Label hour = new Label (flights[i].getHour()+"");
+    					Label door = new Label (flights[i].getDoor()+"");
+    					
+    					airlineCl.getChildren().add(airline);
+    					numberCl.getChildren().add(number);
+    					cityCl.getChildren().add(city);
+    					dateCl.getChildren().add(date);
+    					hourCl.getChildren().add(hour);
+    					doorCl.getChildren().add(door);
+    				}
+    			}
+    		}
     	}
     }
     
@@ -240,6 +276,124 @@ public class ScreenController {
 			airline = "Copa Airlines";
 		}
     	return airline;
+    }
+    
+    @FXML
+    void airlineSearch(ActionEvent event) {
+    	searchType.setText("Airline");
+    	type = 1;
+    	search.setDisable(false);
+    }
+    
+    @FXML
+    void citySearch(ActionEvent event) {
+    	searchType.setText("City");
+    	type = 2;
+    	search.setDisable(false);
+    }
+
+    @FXML
+    void dateSearch(ActionEvent event) {
+    	searchType.setText("Date");
+    	type = 3;
+    	search.setDisable(false);
+    }
+
+    @FXML
+    void doorSearch(ActionEvent event) {
+    	searchType.setText("Door");
+    	type = 4;
+    	search.setDisable(false);
+    }
+    
+    @FXML
+    void hourSearch(ActionEvent event) {
+    	searchType.setText("Hour");
+    	type = 5;
+    	search.setDisable(false);
+    }
+
+    @FXML
+    void numberSearch(ActionEvent event) {
+    	searchType.setText("Number");
+    	type = 6;
+    	search.setDisable(false);
+    }
+
+    @FXML
+    void search(ActionEvent event) {
+    	String text = searchText.getText();
+    	boolean stop = false;
+    	Flight current = flights[0];
+    	clear();
+    	if(type == 1) {
+    		for(int i=0; i<flights.length && !stop; i++) {
+    			if(flights[i].getAirline().equals(text)) {
+    				current = flights[i];
+    				stop = true;
+    			}
+    		}
+    		flights = new Flight[1];
+    		flights[0] = current;
+    		fill();
+    		
+    	}else if(type == 2) {
+    		for(int i=0; i<flights.length && !stop; i++) {
+    			if(flights[i].getCity().equals(text)) {
+    				current = flights[i];
+    				stop = true;
+    			}
+    		}
+    		flights = new Flight[1];
+    		flights[0] = current;
+    		fill();
+    		
+    	}else if(type == 3) {
+    		//Date
+    		
+    		
+    	}else if(type == 4) {
+    		for(int i=0; i<flights.length && !stop; i++) {
+    			if(flights[i].getDoor() == Integer.parseInt(text)) {
+    				current = flights[i];
+    				stop = true;
+    			}
+    		}
+    		flights = new Flight[1];
+    		flights[0] = current;
+    		fill();
+    		
+    	}else if(type == 5) {
+    		//Hour
+    		
+    		
+    	}else {
+    		for(int i=0; i<flights.length && !stop; i++) {
+    			if(flights[i].getNumber().equals(text)) {
+    				current = flights[i];
+    				stop = true;
+    			}
+    		}
+    		flights = new Flight[1];
+    		flights[0] = current;
+    		fill();
+    	}
+    }
+
+    @FXML
+    void previus(ActionEvent event) {
+    	int newPage = Integer.parseInt(page.getText())-1;
+    	page.setText(newPage+"");
+    	clear();
+    	fill();
+    }
+    
+    @FXML
+    void next(ActionEvent event) {
+    	int newPage = Integer.parseInt(page.getText())+1;
+    	page.setText(newPage+"");
+    	clear();
+    	fill();
     }
 
     @FXML

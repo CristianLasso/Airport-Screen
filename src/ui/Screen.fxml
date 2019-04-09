@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
@@ -85,6 +86,29 @@
                   </Label>
                </children>
             </VBox>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" layoutY="348.0" prefHeight="52.0" prefWidth="600.0">
+         <children>
+            <Label text="Search By:  " />
+            <MenuButton fx:id="searchType" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#airlineSearch" text="Airline" />
+                  <MenuItem mnemonicParsing="false" onAction="#numberSearch" text="Number" />
+                  <MenuItem mnemonicParsing="false" onAction="#citySearch" text="City" />
+                  <MenuItem mnemonicParsing="false" onAction="#dateSearch" text="Date" />
+                  <MenuItem mnemonicParsing="false" onAction="#hourSearch" text="Hour" />
+                <MenuItem mnemonicParsing="false" onAction="#doorSearch" text="Door" />
+              </items>
+            </MenuButton>
+            <TextField fx:id="searchText" />
+            <Button fx:id="search" disable="true" mnemonicParsing="false" onAction="#search" prefHeight="25.0" prefWidth="61.0" text="Search" />
+            <Pane prefHeight="52.0" prefWidth="71.0" />
+            <Button mnemonicParsing="false" onAction="#previus" text="&lt;" />
+            <Pane prefHeight="52.0" prefWidth="15.0" />
+            <Label fx:id="page" text="1" />
+            <Pane prefHeight="52.0" prefWidth="15.0" />
+            <Button mnemonicParsing="false" onAction="#next" text="&gt;" />
          </children>
       </HBox>
    </children>
