@@ -328,6 +328,7 @@ public class ScreenController {
     	Flight current = flights[0];
     	clear();
     	if(type == 1) {
+    		//Lineal
     		for(int i=0; i<flights.length && !stop; i++) {
     			if(flights[i].getAirline().equalsIgnoreCase(text)) {
     				current = flights[i];
@@ -339,6 +340,7 @@ public class ScreenController {
     		fill();
     		
     	}else if(type == 2) {
+    		//Lineal
     		for(int i=0; i<flights.length && !stop; i++) {
     			if(flights[i].getCity().equalsIgnoreCase(text)) {
     				current = flights[i];
@@ -350,7 +352,7 @@ public class ScreenController {
     		fill();
     		
     	}else if(type == 3) {
-    		//Date
+    		//Lineal
     		for(int i=0; i<flights.length && !stop; i++) {
     			if(flights[i].getDate().toString().equalsIgnoreCase(text)) {
     				current = flights[i];
@@ -363,18 +365,36 @@ public class ScreenController {
     		
     		
     	}else if(type == 4) {
-    		for(int i=0; i<flights.length && !stop; i++) {
-    			if(flights[i].getDoor() == Integer.parseInt(text)) {
-    				current = flights[i];
-    				stop = true;
-    			}
-    		}
+    		//Binary
+    		byDoor(event);
+    		clear();
+    		boolean flag = false;
+        	int low = 0;
+        	int high = flights.length-1;
+        	int mid = 0;
+    		for(int i=0; i<flights.length && !flag; i++) {
+        		mid = (low+high)/2;
+        		if(flights[mid].getDoor() == Integer.parseInt(text)) {
+        			flag = true;
+        		}else if(flights[mid].getDoor() < Integer.parseInt(text)) {
+        			low = mid+1;
+        		}else if(flights[mid].getDoor() > Integer.parseInt(text)) {
+        			high = mid-1;
+        		}else {
+        			if(mid == high || mid == low) {
+        				flag = true;
+        			}
+        		}
+        		if(flag) {
+        			current = flights[mid];
+        		}
+        	}
     		flights = new Flight[1];
     		flights[0] = current;
     		fill();
     		
     	}else if(type == 5) {
-    		//Hour
+    		//Lineal
     		for(int i=0; i<flights.length && !stop; i++) {
     			if(flights[i].getHour().toString().equalsIgnoreCase(text)) {
     				current = flights[i];
@@ -386,36 +406,35 @@ public class ScreenController {
     		fill();
     		
     	}else {
-    		for(int i=0; i<flights.length && !stop; i++) {
-    			if(flights[i].getNumber().equalsIgnoreCase(text)) {
-    				current = flights[i];
-    				stop = true;
-    			}
-    		}
+    		//Binary
+    		byNumber(event);
+    		clear();
+    		boolean flag = false;
+        	int low = 0;
+        	int high = flights.length-1;
+        	int mid = 0;
+    		for(int i=0; i<flights.length && !flag; i++) {
+        		mid = (low+high)/2;
+        		if(Integer.parseInt(flights[mid].getNumber()) == Integer.parseInt(text)) {
+        			flag = true;
+        		}else if(Integer.parseInt(flights[mid].getNumber()) < Integer.parseInt(text)) {
+        			low = mid+1;
+        		}else if(Integer.parseInt(flights[mid].getNumber()) > Integer.parseInt(text)) {
+        			high = mid-1;
+        		}else {
+        			if(mid == high || mid == low) {
+        				flag = true;
+        			}
+        		}
+        		if(flag) {
+        			current = flights[mid];
+        		}
+        	}
     		flights = new Flight[1];
     		flights[0] = current;
     		fill();
     	}
     	this.time.setText("Time of Operation: "+(System.currentTimeMillis()-time));
-    }
-    
-    public int binarySearch(String value) {
-    	int pos = 0;
-    	boolean flag = false;
-    	int low = 0;
-    	int high = flights.length-1;
-    	int mid = 0;
-    	
-    	for(int i=0; i<flights.length && !flag; i++) {
-    		mid = (low+high)/2;
-    		if(flights[mid].toString().equals(value)) {
-    			flag = true;
-    		}else if(flights[mid].toString().equals(value)) {
-    			
-    		}
-    	}
-    	
-    	return pos;
     }
 
     @FXML
