@@ -8,6 +8,9 @@ public class Flight implements Comparable<Flight>{
 	private String city;
 	private int door;
 	
+	private Flight nextFlight;
+	private Flight previousFlight;
+
 	public Flight(Date date, Hour hour, String airline, String number, String city, int door) {
 		this.date = date;
 		this.hour = hour;
@@ -63,6 +66,22 @@ public class Flight implements Comparable<Flight>{
 
 	public void setDoor(int door) {
 		this.door = door;
+	}
+	
+	public Flight getNextFlight() {
+		return nextFlight;
+	}
+
+	public void setNextFlight(Flight nextFlight) {
+		this.nextFlight = nextFlight;
+	}
+
+	public Flight getPreviousFlight() {
+		return previousFlight;
+	}
+
+	public void setPreviousFlight(Flight previousFlight) {
+		this.previousFlight = previousFlight;
 	}
 
 	@Override

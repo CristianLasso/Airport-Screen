@@ -82,13 +82,14 @@ public class ScreenController {
     @FXML
     private Label time;
     
-    private Flight[] flights;
+    private Flight firstFlight;
     
     private int type;
 
     @FXML
     void byAirline(ActionEvent event) {
     	Long time = System.currentTimeMillis();
+    	Flight[] flights = getFlightList();
     	clear();
     	Comparator<Flight> flightComparator = new FlightAirlineComparator();
 		
@@ -100,6 +101,7 @@ public class ScreenController {
     @FXML
     void byCity(ActionEvent event) {
     	Long time = System.currentTimeMillis();
+    	Flight[] flights = getFlightList();
     	clear();
     	Comparator<Flight> flightComparator = new FlightCityComparator();
 		
@@ -111,6 +113,7 @@ public class ScreenController {
     @FXML
     void byDate(ActionEvent event) {
     	Long time = System.currentTimeMillis();
+    	Flight[] flights = getFlightList();
     	clear();
     	Comparator<Flight> flightComparator = new FlightDateComparator();
 		
@@ -122,6 +125,7 @@ public class ScreenController {
     @FXML
     void byDoor(ActionEvent event) {
     	Long time = System.currentTimeMillis();
+    	Flight[] flights = getFlightList();
     	clear();
     	Comparator<Flight> flightComparator = new FlightDoorComparator();
 		
@@ -133,6 +137,7 @@ public class ScreenController {
     @FXML
     void byNumber(ActionEvent event) {
     	Long time = System.currentTimeMillis();
+    	Flight[] flights = getFlightList();
     	clear();
     	Arrays.sort(flights);
     	fill();
@@ -143,7 +148,6 @@ public class ScreenController {
     void generate(ActionEvent event) {
     	Long time = System.currentTimeMillis();
     	clear();
-    	flights = new Flight[Integer.parseInt(maxFlights.getText())];
     	for(int i=0; i<Integer.parseInt(maxFlights.getText()); i++) {
     		
     		Random rNumber = new Random();
@@ -155,30 +159,42 @@ public class ScreenController {
     		Random rCity = new Random();
     		int option = rCity.nextInt(6);
     		
-    		Flight current = new Flight(createDate(), createHour(), createAirline(), number, createCity(option), option+1);
-    		flights[i] = current;
+    		Flight newFlight = new Flight(createDate(), createHour(), createAirline(), number, createCity(option), option+1);
+    		
+    		if(firstFlight == null) {
+    			firstFlight = newFlight;
+    		}else {
+    			Flight current = firstFlight;
+    			while(current.getNextFlight() != null) {
+    				current = current.getNextFlight();
+    			}
+    			current.setNextFlight(newFlight);
+    			newFlight.setPreviousFlight(current);
+    		}
     	}
-    	
-    	Comparator<Flight> flightComparator = new FlightDateComparator();
-		
-		Arrays.sort(flights, flightComparator);
     	fill();
     	this.time.setText("Time of Operation: "+(System.currentTimeMillis()-time));
     	
     	order.setDisable(false);
     }
     
-    public void fill() {
-    	int pages = (flights.length/17);
+    public void fill() throws NullPointerException{
+
+    	
+    	int pages = (Integer.parseInt(maxFlights.getText())/17);
     	for(int j=0; j<=pages; j++) {
     		if(j+1 == Integer.parseInt(page.getText())) {
-    			for(int i=(17*j); i<17+(17*j) && i<flights.length; i++) {
-    				Label airline = new Label(flights[i].getAirline());
-    				Label number = new Label (flights[i].getNumber()+"");
-    				Label city = new Label (flights[i].getCity());
-    				Label date = new Label (flights[i].getDate()+"");
-    				Label hour = new Label (flights[i].getHour()+"");
-    				Label door = new Label (flights[i].getDoor()+"");
+    			for(int i=(17*j); i<17+(17*j) && i<Integer.parseInt(maxFlights.getText()); i++) {
+    				Flight current = firstFlight;
+    				for(int k=0; k<i && current != null; k++) {
+    					current = current.getNextFlight();
+    				}
+    				Label airline = new Label(current.getAirline());
+    				Label number = new Label (current.getNumber()+"");
+    				Label city = new Label (current.getCity());
+    				Label date = new Label (current.getDate()+"");
+    				Label hour = new Label (current.getHour()+"");
+    				Label door = new Label (current.getDoor()+"");
     				
     				airlineCl.getChildren().add(airline);
     				numberCl.getChildren().add(number);
@@ -186,10 +202,24 @@ public class ScreenController {
     				dateCl.getChildren().add(date);
     				hourCl.getChildren().add(hour);
     				doorCl.getChildren().add(door);
+    				
+    				
     			}
     		}
     	}
     }
+    
+    public Flight[] getFlightList() {
+		Flight[] list = new Flight[Integer.parseInt(maxFlights.getText())];;
+		int i = 0;
+		Flight current = firstFlight;
+		while(current != null) {
+			list[i] = current;
+			i++;
+			current = current.getNextFlight();
+		}
+		return list;
+	}
     
     public void clear() {
     	airlineCl.getChildren().clear();
@@ -325,113 +355,91 @@ public class ScreenController {
     	Long time = System.currentTimeMillis();
     	String text = searchText.getText();
     	boolean stop = false;
-    	Flight current = flights[0];
+    	Flight current = firstFlight;
     	clear();
     	if(type == 1) {
-    		//Lineal
-    		for(int i=0; i<flights.length && !stop; i++) {
-    			if(flights[i].getAirline().equalsIgnoreCase(text)) {
-    				current = flights[i];
+    		while(current != null && !stop) {
+    			if(current.getAirline().equalsIgnoreCase(text)) {
     				stop = true;
+    			}else {
+    					current = current.getNextFlight();
     			}
     		}
-    		flights = new Flight[1];
-    		flights[0] = current;
+    		
+    		firstFlight = current;
+    		firstFlight.setPreviousFlight(null);
+    		firstFlight.setNextFlight(null);
     		fill();
     		
     	}else if(type == 2) {
-    		//Lineal
-    		for(int i=0; i<flights.length && !stop; i++) {
-    			if(flights[i].getCity().equalsIgnoreCase(text)) {
-    				current = flights[i];
+    		while(current != null && !stop) {
+    			if(current.getCity().equalsIgnoreCase(text)) {
     				stop = true;
+    			}else {
+    					current = current.getNextFlight();
     			}
     		}
-    		flights = new Flight[1];
-    		flights[0] = current;
+    		
+    		firstFlight = current;
+    		firstFlight.setPreviousFlight(null);
+    		firstFlight.setNextFlight(null);
     		fill();
     		
     	}else if(type == 3) {
-    		//Lineal
-    		for(int i=0; i<flights.length && !stop; i++) {
-    			if(flights[i].getDate().toString().equalsIgnoreCase(text)) {
-    				current = flights[i];
+    		while(current != null && !stop) {
+    			if(current.getDate().toString().equalsIgnoreCase(text)) {
     				stop = true;
+    			}else {
+    					current = current.getNextFlight();
     			}
     		}
-    		flights = new Flight[1];
-    		flights[0] = current;
+    		
+    		firstFlight = current;
+    		firstFlight.setPreviousFlight(null);
+    		firstFlight.setNextFlight(null);
     		fill();
     		
     		
     	}else if(type == 4) {
-    		//Binary
-    		byDoor(event);
-    		clear();
-    		boolean flag = false;
-        	int low = 0;
-        	int high = flights.length-1;
-        	int mid = 0;
-    		for(int i=0; i<flights.length && !flag; i++) {
-        		mid = (low+high)/2;
-        		if(flights[mid].getDoor() == Integer.parseInt(text)) {
-        			flag = true;
-        		}else if(flights[mid].getDoor() < Integer.parseInt(text)) {
-        			low = mid+1;
-        		}else if(flights[mid].getDoor() > Integer.parseInt(text)) {
-        			high = mid-1;
-        		}else {
-        			if(mid == high || mid == low) {
-        				flag = true;
-        			}
-        		}
-        		if(flag) {
-        			current = flights[mid];
-        		}
-        	}
-    		flights = new Flight[1];
-    		flights[0] = current;
+    		while(current != null && !stop) {
+    			if(current.getDoor() == Integer.parseInt(text)) {
+    				stop = true;
+    			}else {
+    					current = current.getNextFlight();
+    			}
+    		}
+    		
+    		firstFlight = current;
+    		firstFlight.setPreviousFlight(null);
+    		firstFlight.setNextFlight(null);
     		fill();
     		
     	}else if(type == 5) {
-    		//Lineal
-    		for(int i=0; i<flights.length && !stop; i++) {
-    			if(flights[i].getHour().toString().equalsIgnoreCase(text)) {
-    				current = flights[i];
+    		while(current != null && !stop) {
+    			if(current.getHour().toString().equalsIgnoreCase(text)) {
     				stop = true;
+    			}else {
+    					current = current.getNextFlight();
     			}
     		}
-    		flights = new Flight[1];
-    		flights[0] = current;
+    		
+    		firstFlight = current;
+    		firstFlight.setPreviousFlight(null);
+    		firstFlight.setNextFlight(null);
     		fill();
     		
     	}else {
-    		//Binary
-    		byNumber(event);
-    		clear();
-    		boolean flag = false;
-        	int low = 0;
-        	int high = flights.length-1;
-        	int mid = 0;
-    		for(int i=0; i<flights.length && !flag; i++) {
-        		mid = (low+high)/2;
-        		if(Integer.parseInt(flights[mid].getNumber()) == Integer.parseInt(text)) {
-        			flag = true;
-        		}else if(Integer.parseInt(flights[mid].getNumber()) < Integer.parseInt(text)) {
-        			low = mid+1;
-        		}else if(Integer.parseInt(flights[mid].getNumber()) > Integer.parseInt(text)) {
-        			high = mid-1;
-        		}else {
-        			if(mid == high || mid == low) {
-        				flag = true;
-        			}
-        		}
-        		if(flag) {
-        			current = flights[mid];
-        		}
-        	}
-    		flights = new Flight[1];
-    		flights[0] = current;
+    		while(current != null && !stop) {
+    			if(current.getNumber().equalsIgnoreCase(text)) {
+    				stop = true;
+    			}else {
+    					current = current.getNextFlight();
+    			}
+    		}
+    		
+    		firstFlight = current;
+    		firstFlight.setPreviousFlight(null);
+    		firstFlight.setNextFlight(null);
     		fill();
     	}
     	this.time.setText("Time of Operation: "+(System.currentTimeMillis()-time));
@@ -450,7 +458,7 @@ public class ScreenController {
     @FXML
     void next(ActionEvent event) {
     	int newPage = Integer.parseInt(page.getText())+1;
-    	if(newPage<(flights.length/17)+2) {
+    	if(newPage<(Integer.parseInt(maxFlights.getText())/17)+2) {
     		page.setText(newPage+"");
     		clear();
     		fill();
